@@ -54,7 +54,7 @@ if (window.rcmail) {
             if (rcmail.env.isElectron) {
                 event.preventDefault();
                 rcmail.http_get('mail/plugin.mel_archivage_traitement_electron', {
-                    _mbox: rcmail.env.mailbox,
+                    _mbox: rcmail.env.mailbox, 
                     _account: rcmail.env.account,
                     nb_jours: $('#nb_jours').val(),
                     archivage_date: $('#archivage_date').val()
@@ -62,14 +62,19 @@ if (window.rcmail) {
                 rcmail.addEventListener('responseafterplugin.mel_archivage_traitement_electron', function (event) {
                     let stringified = JSON.stringify(event.response.data);
                     let parsedObj = JSON.parse(stringified);
+                    let files = [];
                     for (const mbox in parsedObj) {
                         for (let i = 0; i < parsedObj[mbox].length; i++) {
                             const uid = parsedObj[mbox][i];
-                            // console.log(rcmail.params_from_uid(uid));
-                            window.parent.api.send('download_eml', {'url':'http://localhost/Roundcube/?_task=mail&_save=1&_uid=582&_mbox=INBOX&_action=viewsource&_token=b27abtj7XOUXWahW0bMMqS8xg5IZKLWu'});
+                            files.push(rcmail.secure_url(rcmail.url('mail/viewsource', rcmail.params_from_uid(uid)).replace(/_framed=/, '_save=')));
+                            // window.parent.api.send('download_eml', rcmail.secure_url(rcmail.url('mail/viewsource', rcmail.params_from_uid(uid)).replace(/_framed=/, '_save=')));
                         }
+                        window.parent.api.send('download_eml', files);
                     }
                 });
+                window.parent.api.recieve("download-progress", progess => {
+                    console.log(progress);
+                })
             }
             else {
                 $("#submit_archivage").prop("disabled", true);
