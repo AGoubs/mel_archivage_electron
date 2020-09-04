@@ -54,7 +54,7 @@ if (window.rcmail) {
             if (rcmail.env.isElectron) {
                 event.preventDefault();
                 rcmail.http_get('mail/plugin.mel_archivage_traitement_electron', {
-                    _mbox: rcmail.env.mailbox, 
+                    _mbox: rcmail.env.mailbox,
                     _account: rcmail.env.account,
                     nb_jours: $('#nb_jours').val(),
                     archivage_date: $('#archivage_date').val()
@@ -66,15 +66,25 @@ if (window.rcmail) {
                     for (const mbox in parsedObj) {
                         for (let i = 0; i < parsedObj[mbox].length; i++) {
                             const uid = parsedObj[mbox][i];
-                            files.push(rcmail.secure_url(rcmail.url('mail/viewsource', rcmail.params_from_uid(uid)).replace(/_framed=/, '_save=')));
-                            // window.parent.api.send('download_eml', rcmail.secure_url(rcmail.url('mail/viewsource', rcmail.params_from_uid(uid)).replace(/_framed=/, '_save=')));
+                            files.push({ "url": rcmail.secure_url(rcmail.url('mail/viewsource', rcmail.params_from_uid(uid)).replace(/_framed=/, '_save=')), "uid": uid });
                         }
+                        console.log(files);
                         window.parent.api.send('download_eml', files);
+                        //Remove file from mailbox
+                        $("#nb_mails").text(rcmail.get_label('mel_archivage.archive_downloading'));
                     }
+
+                    window.parent.api.receive('download-finish', (mail) => {
+                        files.forEach(file => {
+                            let mail = rcmail.params_from_uid(file.uid)
+                            rcmail.http_post('mail/delete', {
+                                _mbox: mail._mbox,
+                                _uid: mail._uid,
+                                _remote: 1,
+                            });
+                        })
+                    });
                 });
-                window.parent.api.recieve("download-progress", progess => {
-                    console.log(progress);
-                })
             }
             else {
                 $("#submit_archivage").prop("disabled", true);
