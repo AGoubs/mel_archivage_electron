@@ -66,23 +66,23 @@ if (window.rcmail) {
                     for (const mbox in parsedObj) {
                         for (let i = 0; i < parsedObj[mbox].length; i++) {
                             const uid = parsedObj[mbox][i];
-                            files.push({ "url": rcmail.secure_url(rcmail.url('mail/viewsource', rcmail.params_from_uid(uid)).replace(/_framed=/, '_save=')), "uid": uid });
+                            files.push({ "url": rcmail.secure_url(rcmail.url('mail/viewsource', rcmail.params_from_uid(uid)).replace(/_framed=/, '_save=')), "uid": uid, "mbox": mbox });
                         }
-                        console.log(files);
                         window.parent.api.send('download_eml', files);
-                        //Remove file from mailbox
                         $("#nb_mails").text(rcmail.get_label('mel_archivage.archive_downloading'));
                     }
 
+                    // Remove mails from serveur when download is finish
                     window.parent.api.receive('download-finish', (mail) => {
-                        files.forEach(file => {
-                            let mail = rcmail.params_from_uid(file.uid)
-                            rcmail.http_post('mail/delete', {
-                                _mbox: mail._mbox,
-                                _uid: mail._uid,
-                                _remote: 1,
-                            });
-                        })
+                        // files.forEach(file => {
+                        //     let mail = rcmail.params_from_uid(file.uid)
+                        //     rcmail.http_post('mail/delete', {
+                        //         _mbox: mail._mbox,
+                        //         _uid: mail._uid,
+                        //     });
+                        // })
+                        rcmail.message_list.clear();
+                        $("#nb_mails").text(rcmail.get_label('mel_archivage.archive_downloading_finish'));
                     });
                 });
             }
