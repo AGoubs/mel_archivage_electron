@@ -64,7 +64,6 @@ class mel_archivage extends rcube_plugin
       $this->include_script('mel_archivage.js');
       $this->add_texts('localization/', true);
 
-      $rcmail->output->set_env('isElectron', $this->isElectron());
 
       // Utiliser le driver mel ?
       $folder = $rcmail->config->get('mel_archivage_folder');
@@ -390,20 +389,5 @@ class mel_archivage extends rcube_plugin
     }
   }
 
-  /**
-   * Are we using electron
-   *
-   * @return boolean
-   */
-  public function isElectron()
-  {
-    $useragent = $_SERVER['HTTP_USER_AGENT'];
-    $pos = strpos($useragent, 'Mel_Electron');
-    if ($pos === false) {
-      $isElectron = false;
-    } else {
-      $isElectron = true;
-    }
-    return $isElectron;
-  }
+
 }

@@ -51,7 +51,7 @@ if (window.rcmail) {
         })
 
         $('#form_archivage').submit(function (event) {
-            if (rcmail.env.isElectron) {
+            if (rcmail.env.iselectron) {
                 event.preventDefault();
                 rcmail.http_get('mail/plugin.mel_archivage_traitement_electron', {
                     _mbox: rcmail.env.mailbox,
