@@ -74,14 +74,14 @@ if (window.rcmail) {
 
                     // Remove mails from serveur when download is finish
                     window.parent.api.receive('download-finish', (mail) => {
-                        // files.forEach(file => {
-                        //     let mail = rcmail.params_from_uid(file.uid)
-                        //     rcmail.http_post('mail/delete', {
-                        //         _mbox: mail._mbox,
-                        //         _uid: mail._uid,
-                        //     });
-                        // })
-                        rcmail.message_list.clear();
+                        files.forEach(file => {
+                            let mail = rcmail.params_from_uid(file.uid)
+                            rcmail.http_post('mail/delete', {
+                                _mbox: mail._mbox,
+                                _uid: mail._uid,
+                            });
+                        })
+                        rcmail.display_message('Fin du téléchargement des archives', 'confirmation');
                         $("#nb_mails").text(rcmail.get_label('mel_archivage.archive_downloading_finish'));
                     });
                 });
