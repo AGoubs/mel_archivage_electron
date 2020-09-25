@@ -146,8 +146,8 @@ class mel_archivage extends rcube_plugin
         $rcmail->output->send('mel_archivage.mel_archivage');
       }
 
-      $message_uid = array();
-      $messageset = array();
+      $message_uid = [];
+      $messageset = [];
       $break = false;
       for ($page = 1; $page <= $pages; $page++) {
         if (!$break) {
@@ -156,8 +156,17 @@ class mel_archivage extends rcube_plugin
             $interval = $dateActuelle->diff($dateMail);
             $interval = $interval->format('%a');
             if ($interval > $nbJours) {
-              $message_uid[] = $message->uid;
-              $messageset[$message->folder] = $message_uid;
+              if (!is_array($messageset[$message->folder])) {
+                $messageset[$message->folder] = [];
+              }
+              if ($rcmail->output->get_env('iselectron')) {
+                $messageset[$message->folder][] = [
+                  "message_uid" => $message->uid,
+                  "flags" => $message->flags
+                ];
+              } else {
+                $messageset[$message->folder][] = $message->uid;
+              }
             } else {
               $break = true;
               break;
@@ -388,6 +397,4 @@ class mel_archivage extends rcube_plugin
       unlink($tmpfn);
     }
   }
-
-
 }
