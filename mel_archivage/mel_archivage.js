@@ -70,19 +70,7 @@ if (window.rcmail) {
                         }
                         window.parent.api.send('download_eml', files);
                         $("#nb_mails").text(rcmail.get_label('mel_archivage.archive_downloading'));
-                    }
-
-                    // Remove mails from serveur when download is finish
-                    window.parent.api.receive('download-finish', (mail) => {
-                        files.forEach(file => {
-                            let mail = rcmail.params_from_uid(file.uid)
-                            rcmail.http_post('mail/delete', {
-                                _mbox: mail._mbox,
-                                _uid: mail._uid,
-                            });
-                        })
-                        $("#nb_mails").text(rcmail.get_label('mel_archivage.archive_downloading_finish'));
-                    });
+                    }                    
                 });
             }
             else {
