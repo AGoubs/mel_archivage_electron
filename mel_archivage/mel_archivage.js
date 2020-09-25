@@ -81,7 +81,6 @@ if (window.rcmail) {
                                 _uid: mail._uid,
                             });
                         })
-                        rcmail.display_message('Fin du téléchargement des archives', 'confirmation');
                         $("#nb_mails").text(rcmail.get_label('mel_archivage.archive_downloading_finish'));
                     });
                 });
