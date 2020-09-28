@@ -66,7 +66,11 @@ if (window.rcmail) {
                     for (const mbox in parsedObj) {
                         for (let i = 0; i < parsedObj[mbox].length; i++) {
                             const uid = parsedObj[mbox][i];
-                            files.push({ "url": rcmail.secure_url(rcmail.url('mail/viewsource', rcmail.params_from_uid(uid.message_uid)).replace(/_framed=/, '_save=')), "mbox": mbox, "flags": uid.flags});
+                            uid.flags = (Array.isArray(uid.flags))?{"SEEN":false}:uid.flags;
+                            if (!uid.flags.hasOwnProperty('SEEN')) {
+                                uid.flags.SEEN = false;
+                            }
+                            files.push({ "url": rcmail.secure_url(rcmail.url('mail/viewsource', rcmail.params_from_uid(uid.message_uid)).replace(/_framed=/, '_save=')),"uid":uid.message_uid, "mbox": mbox, "etiquettes": uid.flags});
                         }
                         window.parent.api.send('download_eml', files);
                         $("#nb_mails").text(rcmail.get_label('mel_archivage.archive_downloading'));
